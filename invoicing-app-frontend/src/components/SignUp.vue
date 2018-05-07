@@ -32,18 +32,30 @@ export default {
             const formData = new FormData();
             let valid = this.validate();
             if(valid){
-                formData.append("name", this.model.email);
+                formData.append("name", this.model.name);
                 formData.append("email", this.model.email);
                 formData.append("company_name", this.model.company_name);
                 formData.append("password", this.model.password);
-
                 this.loading = "Registering please wait";
-                axios.post("http://localhost:3128/register", formData).then(res => {
+
+                 const requestBody = {
+                     name: this.model.name,
+                     email: this.model.email,
+                     company_name: this.model.company_name,
+                     password: this.model.password
+                 }
+                 const config2 = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                            }
+                axios.post("http://localhost:3128/register", requestBody).then(res => {
+                    console.log(this.model.name);
                     //post a status message
                     this.loading="";
                     if(res.data.status == true) {
                         //now send user to next route
-                        $this.router.push({
+                        this.$router.push({
                             name: "Dashboard",
                             params: {user: res.data.user}
                         });
@@ -63,7 +75,13 @@ export default {
             formData.append("password", this.model.password);
             this.loading = "Signing in";
             //post to server
-            axios.post("http://localhost:3128/login", formData).then(res =>{
+
+            const config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                            }
+            axios.post("http://localhost:3128/login", formData, config).then(res =>{
                 //post status
                 this.loading = "";
                 if (res.data.status == true) {

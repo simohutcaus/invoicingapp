@@ -18,6 +18,8 @@ app.get('/', function(req,res) {
 });
 
 app.post('/register', function(req, res) {
+    console.log(req.body);
+    console.log('this is req body name ' + req.name);
     if( isEmpty(req.body.name) || isEmpty(req.body.email) || isEmpty(req.body.company_name) || isEmpty(req.body.password)) {
         return res.json({
             'status': false,
