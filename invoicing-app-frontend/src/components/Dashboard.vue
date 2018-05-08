@@ -12,11 +12,13 @@
 <script>
 import Header from "./Header";
 import CreateInvoice from "./CreateInvoice";
+import ViewInvoices from "./ViewInvoices";
 export default {
   name: "Dashboard",
   components: {
     Header,
     CreateInvoice,
+    ViewInvoices
   },
   data() {
     return {

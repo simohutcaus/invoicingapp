@@ -36,21 +36,37 @@ app.post('/register', function(req, res) {
             if (err) {
                 throw err;
             } else {
+                let user_id = this.lastID;
+                console.log(user_id + ' this is user id');
+                let query = `SELECT * from users WHERE id ='${user_id}'`;
+                db.all(query, [], (err, rows) => {
+                    console.log('querying');
+                    if (err) {
+                        console.log(err + ' sql error');
+                        throw err;
+                    }
+                    console.log(rows + ' this is rows');
+                    let user = rows[0];
                 return res.json({
                     status: true,
-                    message: "User Created"
+                    message: "User Created",
+                    user: user
                 });
+            });
             }
         });
    db.close();
 });
 });
 
-app.post('/login', function(req, res) {
+app.post('/login', multipartMiddleware, function(req, res) {
+    //console.log(req + ' this is req');
     let db = new sqlite3.Database("./database/InvoicingApp.db");
     let sql = `SELECT * from users where email='${req.body.email}'`;
+    //console.log(req.body.email + ' this is req email');
     db.all(sql, [], (err, rows) => {
         if(err) {
+            console.log(err + ' this is sql error');
             throw err;
         }
     

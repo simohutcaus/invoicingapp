@@ -107,6 +107,8 @@ export default {
             let price = document.getElementById("txn_price_modal").value;
 
             if(name.length !=0 && price > 0){
+                console.log(price + ' this is price');
+                console.log(name + 'this is name');
                 this.transactions.push({
                     id: this.nextTxnId,
                     name: name,
@@ -153,7 +155,7 @@ export default {
         });
 
         formData.append("name", this.invoice.name);
-        formData.append("txn_names". txn_names);
+        formData.append("txn_names", txn_names);
         formData.append("txn_prices", txn_prices);
         formData.append("user_id", this.$route.params.user.id);
         this.loading = "Creating Invoice, please wait ...";

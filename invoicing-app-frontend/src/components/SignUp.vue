@@ -54,6 +54,7 @@ export default {
                     //post a status message
                     this.loading="";
                     if(res.data.status == true) {
+                        console.log('res data user ' + res.data.user);
                         //now send user to next route
                         this.$router.push({
                             name: "Dashboard",
@@ -81,7 +82,7 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded'
                         }
                             }
-            axios.post("http://localhost:3128/login", formData, config).then(res =>{
+            axios.post("http://localhost:3128/login", formData).then(res =>{
                 //post status
                 this.loading = "";
                 if (res.data.status == true) {
@@ -103,6 +104,8 @@ export default {
     
 };
 </script>
+
+
 <template>
 <div>
 <Header />

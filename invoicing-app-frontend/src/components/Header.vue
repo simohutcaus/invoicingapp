@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import SideNav from './SideNav'
+import SideNav from './SideNav';
 export default {
     name: "Header",
     props: ["user"],
