@@ -4,8 +4,13 @@
     <div class="tab-pane fade show active">
     <div class="row">
     <div class="col-md-12">
+    <h3>View previously entered invoices</h3>
+    <form>
+    <button type="button" class="btn btn-danger" v-on:click="router()">View Invoices</button>
+    </form>
+    <br></br>
     <h3>Enter Details below to Create Invoice</h3>
-    <form @submit.prevent="onSubmit">
+    <form @submit.prevent="onSubmit">   
     <div class="form-group">
         <label for="">Invoice Name:</label>
         <input type="text" required-class="form-control" placeholder="eg Seller's Invoice" v-model="invoice.name">
@@ -142,6 +147,12 @@ export default {
 
         });
         this.invoice.total_price = total;
+    },
+
+    router() {
+        this.$router.push({
+                            name: "ViewInvoices",
+                        });
     },
 
     onSubmit() {
