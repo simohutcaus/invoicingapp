@@ -10,6 +10,7 @@
     <tr>
     <th scope="col">Invoice #</th>
     <th scope="col">Invoice Name</th>
+    <th scope="col">Invoice Price</th>
     <th scope="col">Status</th>
     <th scope="col"></th>
     </tr>
@@ -19,9 +20,10 @@
     <tr>
     <th scope="row">{{ invoice.id }}</th>
     <td>{{ invoice.name }}</td>
+    <td>{{ invoice.price }}</td>
     <td v-if="invoice.paid == 0">Unpaid</td>
     <td v-else>Paid</td>
-    <td><a href="#" class="btn btn-success">TO INVOICE</a></td>
+    <td ><router-link :to="{ name: 'SingleInvoice', params: { invoice_id: invoice.invoice_id }}" class="btn btn-success">TO INVOICE</router-link> </td>
     </tr>
     </template>
     </tbody>
@@ -40,13 +42,17 @@
         data() {
             return {
                 invoices: [],
-                user: this.$route.params.user
+                user: ''
             };
         },
 
         mounted() {
+            this.user = JSON.parse(localStorage.getItem('user'));
             axios
-                .get(`http://localhost:3128/invoice/user/6`)
+                .get(`http://localhost:3128/invoice/user/${this.user.id}`,
+                {
+                    headers: {"x-access-token": localStorage.getItem("token")}
+                })
                 .then(res => {
                     console.log('tried to get');
                     console.log(res);

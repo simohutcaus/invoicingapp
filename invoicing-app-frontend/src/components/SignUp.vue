@@ -54,6 +54,9 @@ export default {
                     //post a status message
                     this.loading="";
                     if(res.data.status == true) {
+                        //store the user token and user data in localstorage
+                        localStorage.setItem('token', res.data.token);
+                        localStorage.setItem('user', JSON.stringify(res.data.user));
                         console.log('res data user ' + res.data.user);
                         //now send user to next route
                         this.$router.push({
@@ -86,6 +89,8 @@ export default {
                 //post status
                 this.loading = "";
                 if (res.data.status == true) {
+                    localStorage.setItem("token", res.data.token);
+                    localStorage.setItem("user", JSON.stringify(res.data.user));
                     // now send user to next route
                     this.$router.push({
                         name: "Dashboard",

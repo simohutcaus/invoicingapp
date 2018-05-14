@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import SignUp from '@/components/SignUp'
 import Dashboard from '@/components/Dashboard'
 import ViewInvoices from '@/components/ViewInvoices'
+import SingleInvoice from '@/components/SingleInvoice'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
   path: "/ViewInvoices",
   name: "ViewInvoices",
   component: ViewInvoices
+},
+{
+  path: "/SingleInvoice",
+  name: "SingleInvoice",
+  component: SingleInvoice
 }
   ]
 })

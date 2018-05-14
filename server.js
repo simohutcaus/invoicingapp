@@ -7,11 +7,16 @@ const saltRounds = 10;
 const isEmpty = require('is-empty');
 const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart();
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 const app = express();
 
+app.set('appSecret', 'secretforinvoicingapp');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(cors());
+app.options('*', cors());
 
 app.get('/', function(req,res) {
     res.send("Welcome to invoicing app");
@@ -47,9 +52,18 @@ app.post('/register', function(req, res) {
                     }
                     console.log(rows + ' this is rows');
                     let user = rows[0];
+                    const payload = {
+                        user: user
+                    }
+
+                    let token = jwt.sign(payload, app, app.get("appSecret"), {
+                        expiresInMinutes: "24h"
+                    });
+
                 return res.json({
                     status: true,
                     message: "User Created",
+                    token: token,
                     user: user
                 });
             });
@@ -81,9 +95,15 @@ app.post('/login', multipartMiddleware, function(req, res) {
     let authenticated = bcrypt.compareSync(req.body.password, user.password);
     delete user.password;
     if (authenticated) {
+        const payload = {user: user};
+        let token = jwt.sign(payload, app.get("appSecret"), {
+            expiresIn: "24h"
+        });
+
         return res.json({
             status: true,
-            user: user
+            user: user,
+            token: token
         });
     }
     return res.json({
@@ -94,6 +114,8 @@ app.post('/login', multipartMiddleware, function(req, res) {
 });
 
 app.post('/invoice', multipartMiddleware, function(req, res) {
+    let txn_names = req.body.txn_names.split(",");
+    let txn_prices = req.body.txn_prices.split(",");
     if (isEmpty(req.body.name)) {
         return res.json({
             status: false,
@@ -114,10 +136,11 @@ app.post('/invoice', multipartMiddleware, function(req, res) {
             }
             let invoice_id = this.lastID;
             console.log(req.body);
-            for (let i = 0; i < req.body.txn_names.length; i++) {
+            for (let i = 0; i < txn_names.length; i++) {
+                console.log(req.body.txn_names);
                 let query = `INSERT INTO transactions(name, price, invoice_id) VALUES(
-                    '${req.body.txn_names[i]}',
-                    '${req.body.txn_prices[i]}',
+                    '${txn_names[i]}',
+                    '${txn_prices[i]}',
                     '${invoice_id}'
                 )`
                 db.run(query);
@@ -133,18 +156,49 @@ app.post('/invoice', multipartMiddleware, function(req, res) {
 
 });
 
+app.use(function(req, res, next){
+
+    let token = req.body.token || req.query.token || req.headers["x-access-token"];
+
+    if (token) {
+        jwt.verify(token, app.get("appSecret"), function(err, decoded) {
+            if (err) {
+                return res.json({
+                    success: false,
+                    message: "failed to authenticate token"
+                });
+            } else {
+                req.decoded = decoded;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({
+            success: false,
+            message: "No token provided"
+        })
+    }
+});
+
+
+
 app.get('/invoice/user/:user_id', multipartMiddleware, function(req, res) {
     let db = new sqlite3.Database('./database/InvoicingApp.db');
     let sql = `SELECT * FROM invoices LEFT JOIN transactions ON invoices.id=transactions.invoice_id WHERE user_id='${req.params.user_id}' `;
     db.all(sql, [], (err, rows) => {
         if (err) {
             throw err;
-        }
+            console.log('sql error has occured');
+        } else {
+
+
 
         return res.json({
             status: true,
             transactions: rows
         });
+        console.log('no error');
+    }
     });
 });
 
