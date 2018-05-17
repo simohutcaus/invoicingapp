@@ -5,6 +5,8 @@
     <div class="col-md-12">
     <h3>Here are a list of your Invoices
     </h3>
+    <router-link :to="'Dashboard'" tag="button" class="btn btn-succes">Back to Dashboard</router-link>
+    <br></br>
     <table class="table">
     <thead>
     <tr>

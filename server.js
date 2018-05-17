@@ -9,8 +9,17 @@ const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart();
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
-
+let nodemailer = require("nodemailer");
 const app = express();
+
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'simonhuspsn@gmail.com',
+        pass: 'Soccer900psn'
+    }
+});
 
 app.set('appSecret', 'secretforinvoicingapp');
 app.use(bodyParser.urlencoded({extended: false}));
@@ -216,6 +225,35 @@ app.get('/invoice/user/:user_id/:invoice_id', multipartMiddleware, function (req
         });
     });
 });
+
+app.post('/sendmail', multipartMiddleware, function(req,res){
+    let sender = JSON.parse(req.body.user);
+    let recepient = JSON.parse(req.body.recepient);
+    let amount = JSON.parse(req.body.amount);
+    let mailOptions = {
+        from: "simonhuspsn@gmail.com",
+        to: recepient.email,
+        subject: `Hi, ${recepient.name}. Here is a Invoice from ${sender.company_name}. The amount owing is ${amount}`,
+        text: `You owe ${sender.company_name}`
+    };
+    console.log(sender);
+    console.log(recepient);
+    console.log(amount);
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            return res.json ({
+                status: 200,
+                message: `Error sending to ${recepient.name}`
+            });   
+        } else {
+            return res.json ({
+                status: 200,
+                message: `Email sent to ${recepient.name}`
+            });
+        }
+    });
+}); 
 
 
 app.listen(PORT, function() {
